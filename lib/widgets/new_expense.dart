@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
 
@@ -30,28 +33,55 @@ class _NewExpenseState extends State<NewExpense> {
     });
   }
 
+  void _showDialog() {
+    if (Platform.isIOS) {
+      showCupertinoDialog(
+        context: context,
+        builder: (ctx) =>
+            AlertDialog(
+              title: const Text("Invalid Input"),
+              content: const Text(
+                  "Please enter a valid title, amount and date and fill all required input"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text("Okay"),
+                )
+              ],
+            ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (ctx) =>
+            AlertDialog(
+              title: const Text("Invalid Input"),
+              content: const Text(
+                  "Please enter a valid title, amount and date and fill all required input"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text("Okay"),
+                )
+              ],
+            ),
+      );
+    }
+  }
+
   void _submitExpenseDate() {
     final enteredAmount = double.tryParse(_amountController.text);
     final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
-    if (_titleController.text.trim().isEmpty ||
+    if (_titleController.text
+        .trim()
+        .isEmpty ||
         amountIsInvalid ||
         _selectedDate == null) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text("Invalid Input"),
-          content: const Text(
-              "Please enter a valid title, amount and date and fill all required input"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-              },
-              child: const Text("Okay"),
-            )
-          ],
-        ),
-      );
+      _showDialog();
       return;
     }
     final newExpense = Expense(
@@ -73,7 +103,10 @@ class _NewExpenseState extends State<NewExpense> {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
+    final keyboardSpace = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
     return LayoutBuilder(builder: (ctx, constraint) {
       final width = constraint.maxWidth;
 
@@ -95,7 +128,7 @@ class _NewExpenseState extends State<NewExpense> {
                           maxLength: 50,
                           keyboardType: TextInputType.text,
                           decoration:
-                              const InputDecoration(label: Text("Title")),
+                          const InputDecoration(label: Text("Title")),
                         ),
                       ),
                       const SizedBox(
@@ -112,7 +145,7 @@ class _NewExpenseState extends State<NewExpense> {
                     ],
                   )
                 else
-                  // Title input
+                // Title input
                   TextField(
                     controller: _titleController,
                     maxLength: 50,
@@ -126,11 +159,12 @@ class _NewExpenseState extends State<NewExpense> {
                           value: _selectedCategory,
                           items: Category.values
                               .map(
-                                (category) => DropdownMenuItem(
+                                (category) =>
+                                DropdownMenuItem(
                                   value: category,
                                   child: Text(category.name.toUpperCase()),
                                 ),
-                              )
+                          )
                               .toList(),
                           onChanged: (value) {
                             setState(() {
@@ -161,7 +195,7 @@ class _NewExpenseState extends State<NewExpense> {
                     ],
                   )
                 else
-                  // Date input
+                // Date input
                   Row(
                     children: [
                       // Amount input
@@ -212,18 +246,19 @@ class _NewExpenseState extends State<NewExpense> {
                     ],
                   )
                 else
-                  // Buttons
+                // Buttons
                   Row(
                     children: [
                       DropdownButton(
                           value: _selectedCategory,
                           items: Category.values
                               .map(
-                                (category) => DropdownMenuItem(
+                                (category) =>
+                                DropdownMenuItem(
                                   value: category,
                                   child: Text(category.name.toUpperCase()),
                                 ),
-                              )
+                          )
                               .toList(),
                           onChanged: (value) {
                             setState(() {
